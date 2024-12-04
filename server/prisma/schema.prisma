@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+  PARENT
+}
+
+model User {
+  id       Int        @id @default(autoincrement())
+  name     String
+  email    String     @unique
+  password String
+  roles    UserRole[]
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  registeredExams exam_catalogue[] @relation("ExamMembers")
+  exam_catalogue  exam_catalogue[] @relation(name: "UserCreatedQuestions")
+}
+
+model UserRole {
+  id     Int  @id @default(autoincrement())
+  role   Role
+  userId Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([role, userId])
+}
+
+model exam_catalogue {
+  id                String                    @id @default(uuid())
+  isApproved        Boolean                   @default(false)
+  exam_code         String
+  exam_name         String
+  timebased         Boolean
+  viewback          Boolean
+  duration          Int
+  created_date      DateTime                  @default(now())
+  createdBy         Int
+  createdByUser     User                      @relation(name: "UserCreatedQuestions", fields: [createdBy], references: [id])
+  last_updated_date DateTime                  @updatedAt
+  questions         blf_catalogue_questions[] @relation("ExamQuestions")
+  registeredMembers User[]                    @relation("ExamMembers")
+}
+
+model blf_catalogue_questions {
+  id                String              @id @default(uuid())
+  question_code     String              @db.VarChar(10)
+  question          String              @db.VarChar(100)
+  timeinsec         Int
+  created_date      DateTime            @default(now())
+  created_by        String
+  last_updated_date DateTime            @updatedAt
+  last_updated_by   String
+  keys              blf_catalogue_key[] @relation("QuestionKeys")
+  exams             exam_catalogue[]    @relation("ExamQuestions")
+}
+
+model blf_catalogue_key {
+  id                String                  @id @default(uuid())
+  key               String                  @db.VarChar(100)
+  question_id       String
+  correctkey        Boolean
+  created_date      DateTime                @default(now())
+  created_by        String
+  last_updated_date DateTime                @updatedAt
+  question          blf_catalogue_questions @relation(fields: [question_id], references: [id], name: "QuestionKeys")
+}
+
+model ApprovalRequest {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  status    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
