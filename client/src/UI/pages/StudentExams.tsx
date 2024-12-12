@@ -79,6 +79,7 @@ export function StudentExams() {
         `http://localhost:3000/api/user/register-for-exam`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
