@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
@@ -28,6 +28,8 @@ const ExamCreation = () => {
   const [newQuestionText, setNewQuestionText] = useState("");
   const [newQuestionImage, setNewQuestionImage] = useState<string | null>(null);
   const [newOptions, setNewOptions] = useState(["", ""]);
+  const [newTime, setNewTime] = useState<number | null>(null);
+  const [isQuetimeBased, setisQueTimeBased] = useState(false);
   const [correctAnswer, setCorrectAnswer] = useState<string | "">("");
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number | -1>(-1);
   const [isDragEnabled, setIsDragEnabled] = useState(false);
@@ -94,12 +96,12 @@ const ExamCreation = () => {
         answer: q.answer,
         image: q.image,
         answerIndex: q.answerIndex,
+        timeinsec: q.timeinsec,
       })),
     };
 
     try {
       console.log(payload, "asdfasdfas");
-
       await axios.post("http://localhost:3000/api/exam/create", payload, {
         withCredentials: true,
       });
@@ -134,8 +136,10 @@ const ExamCreation = () => {
       options: [...newOptions],
       answer: correctAnswer,
       answerIndex: correctAnswerIndex,
+      timeinsec: newTime,
     };
     console.log(question, "question");
+    console.log(questions, "question");
     // return;
 
     setQuestions((prev) =>
@@ -143,6 +147,7 @@ const ExamCreation = () => {
         ? prev.map((q) => (q.id === editingId ? question : q))
         : [question, ...prev]
     );
+
     resetNewQuestionFields();
   };
 
@@ -152,6 +157,8 @@ const ExamCreation = () => {
     setNewOptions(["", ""]);
     setCorrectAnswer("");
     setEditingId(null);
+    setNewTime(0);
+    setisQueTimeBased(false);
   };
 
   const deleteQuestion = (id: string) => {
@@ -306,6 +313,7 @@ const ExamCreation = () => {
           onChange={(e) => setNewQuestionText(e.target.value)}
           className="border rounded-lg px-3 py-2 w-full mb-4"
         />
+
         {/* <input type="file" onChange={handleImageUpload} className="mb-4" /> */}
 
         {/* options */}
@@ -342,6 +350,24 @@ const ExamCreation = () => {
             Add Option
           </button>
         )}
+        <div className="my-1 ">
+          <label>Time-Based</label>
+          <input
+            type="checkbox"
+            checked={isQuetimeBased}
+            onChange={() => setisQueTimeBased(!isQuetimeBased)}
+            className="ml-2"
+          />
+          {isQuetimeBased && (
+            <input
+              type="number"
+              placeholder="Duration (mins)"
+              value={newTime || ""}
+              onChange={(e) => setNewTime(parseInt(e.target.value))}
+              className="border rounded-lg px-3 py-2 w-[110px] mr-24 ml-4"
+            />
+          )}
+        </div>
 
         <select
           value={correctAnswer}

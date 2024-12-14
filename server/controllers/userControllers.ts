@@ -229,3 +229,65 @@ export const getUserRegisteredExams = async (
 
   res.json({ user, role: req.user.role });
 };
+
+export const registerForExam = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  const { examId } = req.body;
+  console.log(examId, "this si asfasf");
+  if (!req.user) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  try {
+    if (!req.user.userId || !examId) {
+      res.status(400).json({ message: "User ID and Exam ID are required." });
+      return;
+    }
+
+    const exam = await prisma.exam_catalogue.findUnique({
+      where: { id: examId },
+    });
+
+    if (!exam) {
+      res.status(404).json({ message: "Exam not found." });
+      return;
+    }
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+      include: { registeredExams: true },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
+
+    const isAlreadyRegistered = user.registeredExams.some(
+      (e) => e.id === examId
+    );
+    if (isAlreadyRegistered) {
+      res
+        .status(400)
+        .json({ message: "User is already registered for this exam." });
+      return;
+    }
+
+    await prisma.user.update({
+      where: { id: req.user.userId },
+      data: {
+        registeredExams: {
+          connect: { id: examId },
+        },
+      },
+    });
+    res
+      .status(200)
+      .json({ message: "User successfully registered for the exam." });
+  } catch (error) {
+    console.error("Error registering for exam:", error);
+    res.status(500).json({ message: "Internal server error.", error });
+  }
+};

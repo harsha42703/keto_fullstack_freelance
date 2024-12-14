@@ -37,7 +37,7 @@ export const createExam = async (req: AuthenticatedRequest, res: Response) => {
           data: {
             question_code: generateUniqueId(),
             question: q.question,
-            timeinsec: q.timeInSec || 0,
+            timeinsec: q.timeinsec || 0,
             created_by: "lokesh@katari.com",
             exams: { connect: { id: exam.id } },
             last_updated_by: "lokesh@katari.com",
@@ -56,7 +56,10 @@ export const createExam = async (req: AuthenticatedRequest, res: Response) => {
       }
     });
 
-    res.status(201).json({ message: "Exam created and awaiting approval" });
+    res.status(201).json({
+      message: "Exam created and awaiting approval",
+      questions: questions,
+    });
   } catch (error) {
     res.status(500).json({ error: "Error creating exam", errori: error });
   }
@@ -302,61 +305,6 @@ export const getAllExams = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ error: "An error occurred while fetching questions." });
-  }
-};
-
-export const registerForExam = async (req: Request, res: Response) => {
-  const { userId, examId } = req.body;
-  console.log(userId, examId, "this si asfasf");
-
-  try {
-    if (!userId || !examId) {
-      res.status(400).json({ message: "User ID and Exam ID are required." });
-      return;
-    }
-
-    const exam = await prisma.exam_catalogue.findUnique({
-      where: { id: examId },
-    });
-
-    if (!exam) {
-      res.status(404).json({ message: "Exam not found." });
-      return;
-    }
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { registeredExams: true },
-    });
-
-    if (!user) {
-      res.status(404).json({ message: "User not found." });
-      return;
-    }
-
-    const isAlreadyRegistered = user.registeredExams.some(
-      (e) => e.id === examId
-    );
-    if (isAlreadyRegistered) {
-      res
-        .status(400)
-        .json({ message: "User is already registered for this exam." });
-      return;
-    }
-
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        registeredExams: {
-          connect: { id: examId },
-        },
-      },
-    });
-    res
-      .status(200)
-      .json({ message: "User successfully registered for the exam." });
-  } catch (error) {
-    console.error("Error registering for exam:", error);
-    res.status(500).json({ message: "Internal server error.", error });
   }
 };
 
