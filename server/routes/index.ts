@@ -9,6 +9,7 @@ import {
   registerForApproval,
   registrationRequests,
   rejectRegistrationRequests,
+  registerForExam,
 } from "../controllers/userControllers";
 import { authenticateUser } from "../middlewares/authMiddleware";
 import {
@@ -19,7 +20,6 @@ import {
   getApprovedQuestions,
   getExamById,
   getUnapprovedQuestions,
-  registerForExam,
 } from "../controllers/examControllers";
 
 const router = Router();
@@ -50,5 +50,5 @@ router.post("/registration-requests/:id/approve", approveRegistrationRequest);
 router.put("/registration-requests/:id/reject", rejectRegistrationRequests);
 
 //routes for registering the exam
-router.post("/user/register-for-exam", registerForExam);
+router.post("/user/register-for-exam", authenticateUser, registerForExam);
 export default router;
