@@ -1,4 +1,5 @@
 import { DashboardSection } from "../DashboardSection";
+import GraphStudent from "../pages/GraphStudent";
 import { StatCard } from "../StatCard";
 import { Users, BookOpen, Clock, Activity } from "lucide-react";
 
@@ -51,6 +52,7 @@ export const ParentDashboard = () => {
       </div>
 
       {/* Upcoming Exams Section */}
+      <GraphStudent/>
       <DashboardSection
         title="Upcoming Exams"
         description="Scheduled examinations"

@@ -1,5 +1,6 @@
 import { DashboardSection } from "../DashboardSection";
 import ExamApprove from "../ExamApprove";
+import GraphAdmin from "../pages/GraphAdmin";
 import { StatCard } from "../StatCard";
 import { Users, BookOpen, Clock, Activity } from "lucide-react";
 
@@ -52,6 +53,7 @@ export const AdminDashboard = () => {
       </div>
 
       {/* Upcoming Exams Section */}
+      <GraphAdmin/>
       <DashboardSection
         title="Upcoming Exams"
         description="Scheduled examinations"

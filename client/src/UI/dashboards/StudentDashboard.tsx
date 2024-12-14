@@ -1,5 +1,6 @@
 import { DashboardSection } from "../DashboardSection";
 import { StatCard } from "../StatCard";
+import GraphStudent from '../pages/GraphStudent'
 import { Users, BookOpen, Clock, Activity } from "lucide-react";
 
 export const StudentDashboard = () => {
@@ -51,6 +52,8 @@ export const StudentDashboard = () => {
       </div>
 
       {/* Upcoming Exams Section */}
+      
+       <GraphStudent/>
       <DashboardSection
         title="Upcoming Exams"
         description="Scheduled examinations"

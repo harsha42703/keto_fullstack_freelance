@@ -22,7 +22,7 @@ type Exam = {
   questions: Question[];
 };
 
-const ExamApprove: React.FC = () => {
+const  ExamApprove: React.FC = () => {
   const [exams, setExams] = useState<Exam[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleOpenModal = () => {
@@ -94,11 +94,11 @@ const ExamApprove: React.FC = () => {
 
   return (
     <div className="p-4 bg-gray-100 h-[90vh] rounded-lg">
-      <div className="h-[100%] w-[100%] flex-col flex items-justify-center">
+      <div className="h-[100%] w-[100%] mb-2 flex-col flex items-justify-center">
         {exams.map((exam) => (
           <div
             key={exam.examCode}
-            className="bg-white w-[70vw] shadow-md rounded-lg p-4 flex flex-col justify-between"
+            className="bg-white w-[70vw] shadow-md mb-3 rounded-lg p-4 flex flex-col justify-between"
           >
             <div>
               <h3 className="text-xl text-cyan-800 font-bold mb-2 capitalize">
@@ -204,7 +204,6 @@ const ExamApprove: React.FC = () => {
         onClose={handleCloseModal}
         onSubmitFeedback={handleDisapprove}
       />
-      ;
     </div>
   );
 };
